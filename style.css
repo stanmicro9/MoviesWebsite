@@ -101,7 +101,7 @@
 }
 
 h2{
-    color:#970044;
+    color:#cc0a61;
     text-align: center;
 } 
 
@@ -135,7 +135,7 @@ h2{
 }
 
 #submit-btn{
-    background-color:#970044;
+    background-color:#cc0a61;
     border: none;
     color:grey ;
 }
@@ -150,7 +150,7 @@ h2{
 }
 
 .up-icon a{
-    background-color:#970044;
+    background-color:#cc0a61;
     margin-left: 90%;
     transform: translateY(-70%);
     font-size: 40px;
