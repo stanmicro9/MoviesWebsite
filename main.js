@@ -14,8 +14,9 @@ var sideBarButton = document.querySelector('.middle');
 var menu =document.querySelector('#menu');
 var search= document.querySelector('#searchContainer')
 const menuList = document.querySelector('#menuList');
+const loadingIndicator = document.querySelector('#loading-indicator');
 
-
+//default fetch
 getMovies(`https://api.themoviedb.org/3/movie/now_playing?api_key=${API_key}`); //home page default
 
 
@@ -61,7 +62,7 @@ function display(movies) {
             movieDetails.style.display = 'none'; //Hiding movie details
         });
     });
-}
+} 
 
 sideBarButton.addEventListener('click', function(){
     if(menu.classList.contains('d-none')){
@@ -87,20 +88,66 @@ options.forEach((option, index) => {
     menuList.appendChild(optionEle);
 });
 
+// function getMovies(endpoint) {
+//     fetch(endpoint)
+//         .then(response => response.json())
+//         .then(data => display(data.results))
+//         .catch(error => console.error('Error fetching data:', error));
+// }
+
+//fetchig movies with error handling
 function getMovies(endpoint) {
+    loadingIndicator.classList.remove('d-none');
     fetch(endpoint)
-        .then(response => response.json())
-        .then(data => display(data.results))
-        .catch(error => console.error('Error fetching data:', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            display(data.results);
+            loadingIndicator.classList.add('d-none');
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Fetch Error',
+                text: 'An error occurred while fetching movie data. Please try again later.',
+            });
+            loadingIndicator.classList.add('d-none');
+        });
 }
 
-
+const searchInput = document.querySelector('#searchInput');
+// searchInput.addEventListener('input', () => {
+//     const query = searchInput.value.trim();
+//     if (query.length >= 3) {
+//         const searchEndpoint = `https://api.themoviedb.org/3/search/movie?api_key=${API_key}&query=${query}`;
+//         fetch(searchEndpoint)
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.results.length === 0) {
+//                     displayNoResults();
+//                 } else {
+//                     display(data.results);
+//                 }
+//             })
+//             .catch(error => console.error('Error searching movies:', error));
+//     }
+// });
 searchInput.addEventListener('input', () => {
     const query = searchInput.value.trim();
     if (query.length >= 3) {
         const searchEndpoint = `https://api.themoviedb.org/3/search/movie?api_key=${API_key}&query=${query}`;
         fetch(searchEndpoint)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.results.length === 0) {
                     displayNoResults();
@@ -108,7 +155,14 @@ searchInput.addEventListener('input', () => {
                     display(data.results);
                 }
             })
-            .catch(error => console.error('Error searching movies:', error));
+            .catch(error => {
+                console.error('Error searching movies:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Search Error',
+                    text: 'An error occurred while searching for movies. Please try again later.',
+                });
+            });
     }
 });
 
